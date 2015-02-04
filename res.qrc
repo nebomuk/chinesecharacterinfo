@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="hanzitable.csv">hanzitable.csv</file>
+        <file alias="AdjList.txt">AdjList.txt</file>
+        <file alias="decomp.txt">decomp.txt</file>
+        <file alias="cedict_ts.u8">cedict_ts.u8</file>
+        <file alias="CharFreq-Modern.csv">CharFreq-Modern.csv</file>
+        <file alias="ic_launcher.png">ic_launcher.png</file>
+    </qresource>
+</RCC>
