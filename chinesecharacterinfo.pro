@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     adjdecloader.cpp \
     deprecated/hanzisearch2.cpp \
     dictloader_edict.cpp \
-    dictloadersep.cpp
+    dictloadersep.cpp \
+    convertpinyin.cpp
 
 HEADERS  += mainwindow.h \
     inputform.h \
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h \
     dictloader_edict.h \
     dictloadersep.h \
     charfreq.h \
-    color.h
+    color.h \
+    convertpinyin.h
 
 FORMS    += mainwindow.ui \
     mainwindow_small.ui
