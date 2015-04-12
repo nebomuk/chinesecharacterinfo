@@ -19,7 +19,7 @@ ConvertPinyin::ConvertPinyin()
 //        pinyinToneMark.insert(4, "\u00e0\u00f2\u00e8\u00ec\u00f9\u01dc\u01dc");
 
 //        QStringList words = input.split(' ');
-//        QString accented = "";
+        QString accented = "";
 //        QString t = "";
 //        foreach (QString pinyin, words)
 //        {
@@ -92,5 +92,5 @@ ConvertPinyin::ConvertPinyin()
 //            accented += t + " ";
 //        }
 //        accented = accented.trimmed();
-//        return accented;
+        return accented;
     }
