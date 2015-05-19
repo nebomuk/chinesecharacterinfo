@@ -15,17 +15,17 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QDebug>
 #include <QNetworkReply>
+#include "htmldelegate.h"
 
 InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
     QObject(parent)
 {
+    ui_ = ui;
     RTHLineEdit_ = ui->lineEdit;
      translationLineEdit_ = ui->translationLineEdit;
      translationEnLineEdit_ = ui->translationEnLineEdit;
      webView_ = ui->webView;
 //     webView1_ = ui->webView1; // currently not in layout
-     decTextEdit_ = ui->decTextEdit;
-     adjTextEdit_ = ui->adjTextEdit;
      ceTextEdit_ = ui->ceTextEdit;
 
 
@@ -51,6 +51,17 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
      adjLoader = new AdjDecLoader(":AdjList.txt",dictLoader->getDict());
      decLoader = new AdjDecLoader(":decomp.txt",dictLoader->getDict());
 
+     adjModel_ = new QStringListModel(this);
+     decModel_ = new QStringListModel(this);
+
+     ui_->adjListView->setModel(adjModel_);
+     ui_->adjListView->setItemDelegate(new HtmlDelegate(this));
+
+
+     ui_->decListView->setModel(decModel_);
+     ui_->decListView->setItemDelegate(new HtmlDelegate(this));
+
+
     // info: /print would argument will hide the left border
    // ui->webView->load(QUrl("http://www.thai-language.com"));
 
@@ -68,6 +79,8 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
+    connect(ui_->adjListView,SIGNAL(clicked(QModelIndex)),this,SLOT(onAdjListItemClicked(QModelIndex)));
+    connect(ui_->decListView,SIGNAL(clicked(QModelIndex)),this,SLOT(onDecListItemClicked(QModelIndex)));
 }
 
 void InputForm::onLoadFinished(bool)
@@ -79,6 +92,58 @@ void InputForm::onLoadFinished(bool)
         frame->scroll(16,186);
 }
 
+void InputForm::onAdjListItemClicked(QModelIndex index)
+{
+    int rowIndex = index.row();
+    QString str = adjModel_->stringList().at(rowIndex);
+    if(str > 0)
+    {
+        updateModels(str.remove(QRegExp("<[^>]*>")).at(0)); // remove html and take first char (chinese char)
+    }
+}
+
+void InputForm::onDecListItemClicked(QModelIndex index)
+{
+    int rowIndex = index.row();
+    QString str = decModel_->stringList().at(rowIndex);
+    if(str > 0)
+    {
+        updateModels(str.remove(QRegExp("<[^>]*>")).at(0));
+    }
+}
+
+
+void InputForm::updateModels(QString text)
+{
+    QString translation = text.length() > 0 ? text.at(0) + " " + dictLoader->getDict().value(text.at(0)) : QString();
+    QString translationEn = text.length() > 0 ? text.at(0) + " " + dictLoaderEn->getDict().value(text.at(0)) : QString();
+    translationLineEdit_->setText(translation);
+    translationLineEdit_->home(false);
+    translationEnLineEdit_->setText(translationEn);
+    translationEnLineEdit_->home(false);
+    RTHLineEdit_->setText(hanziSearch->getText(text));
+    RTHLineEdit_->home(false);
+
+    decModel_->setStringList(decLoader->getText(text));
+    adjModel_->setStringList(adjLoader->getText(text,true));
+
+
+//    webView1_->load(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + text.at(0) +"&submitButton1=Etymology"));
+
+
+
+    QWebFrame *frame = webView_->page()->mainFrame();
+
+        //QWebElement searchElement = frame->findFirstElement("#search");
+        QWebElement searchElement = frame->findFirstElement("[name=c]");
+
+        searchElement.setAttribute("value",text.at(0));
+        searchElement.setFocus();
+        QKeyEvent keyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+        webView_->event(&keyEvent);
+
+        manager->get(QNetworkRequest(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + text.at(0) +"&submitButton1=Etymology")));
+}
 
 void InputForm::clipboardChanged(QClipboard::Mode mode)
 {
@@ -105,34 +170,7 @@ void InputForm::clipboardChanged(QClipboard::Mode mode)
 
     text = isHan.cap();
 
-    QString translation = text.length() > 0 ? text.at(0) + " " + dictLoader->getDict().value(text.at(0)) : QString();
-    QString translationEn = text.length() > 0 ? text.at(0) + " " + dictLoaderEn->getDict().value(text.at(0)) : QString();
-    translationLineEdit_->setText(translation);
-    translationLineEdit_->home(false);
-    translationEnLineEdit_->setText(translationEn);
-    translationEnLineEdit_->home(false);
-    RTHLineEdit_->setText(hanziSearch->getText(text));
-    RTHLineEdit_->home(false);
-    adjTextEdit_->setText(adjLoader->getText(text,true));
-    decTextEdit_->setText(decLoader->getText(text));
-
-
-//    webView1_->load(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + text.at(0) +"&submitButton1=Etymology"));
-
-
-
-    QWebFrame *frame = webView_->page()->mainFrame();
-
-        //QWebElement searchElement = frame->findFirstElement("#search");
-        QWebElement searchElement = frame->findFirstElement("[name=c]");
-
-        searchElement.setAttribute("value",text.at(0));
-        searchElement.setFocus();
-        QKeyEvent keyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
-        webView_->event(&keyEvent);
-
-        manager->get(QNetworkRequest(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + text.at(0) +"&submitButton1=Etymology")));
-
+    updateModels(text);
 }
 
 void InputForm::replyFinished(QNetworkReply *reply)

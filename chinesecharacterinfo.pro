@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     deprecated/hanzisearch2.cpp \
     dictloader_edict.cpp \
     dictloadersep.cpp \
-    convertpinyin.cpp
+    convertpinyin.cpp \
+    htmldelegate.cpp
 
 HEADERS  += mainwindow.h \
     inputform.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     dictloadersep.h \
     charfreq.h \
     color.h \
-    convertpinyin.h
+    convertpinyin.h \
+    htmldelegate.h
 
 FORMS    += mainwindow.ui \
     mainwindow_small.ui

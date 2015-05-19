@@ -43,12 +43,12 @@ AdjDecLoader::AdjDecLoader(const QString& fileName, QHash<QString, QString> char
     QtConcurrent::run(this, &AdjDecLoader::loadData);
 }
 
-QString AdjDecLoader::getText(const QString &hanzi, bool colorIfSubAdj)
+QStringList AdjDecLoader::getText(const QString &hanzi, bool colorIfSubAdj)
 {
     if(hanzi.size() == 0)
-        return QString();
+        return QStringList();
 
-    QString text;
+    QStringList texts;
     QStringList adjs = charAdj[hanzi.at(0)];
     qSort(adjs.begin(),adjs.end(),CharFreq::moreFrequent);
 
@@ -64,18 +64,19 @@ QString AdjDecLoader::getText(const QString &hanzi, bool colorIfSubAdj)
 
         QString pinyin = charDef[adj].section(" ",0,0);
 
+
         if(hasAdj && colorIfSubAdj) // make background gray
         {
 
-            text += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
+            texts += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  \">"
                 "<span style=\" background-color:#f0f0f0;\"><span style=\" font-size:16pt;\">" + Color::addColorSpan(adj,pinyin) + "</span></span>" + charDef[adj] + "</p>";
         }
         else
         {
-            text += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
+            texts += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; vertical-align:top; \">"
                     "<span style=\" font-size:16pt;\">" + Color::addColorSpan(adj,pinyin) + "</span> " + charDef[adj] + "</p>";
         }
 
     }
-    return text;
+    return texts;
 }

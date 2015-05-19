@@ -11,6 +11,7 @@
 #include <QClipboard>
 #include <QLineEdit>
 #include <ui_mainwindow.h>
+#include <QStringListModel>
 // copys the text from the clipboard and calls a certain input form in the webview
 
 class InputForm : public QObject
@@ -19,6 +20,7 @@ class InputForm : public QObject
 public:
     explicit InputForm(Ui::MainWindow *ui, QObject *parent = 0);
     
+    void updateModels(QString text);
 public slots:
     
 private slots:
@@ -26,6 +28,8 @@ private slots:
     void clipboardChanged(QClipboard::Mode mode);
 
     void replyFinished(QNetworkReply *reply);
+    void onAdjListItemClicked(QModelIndex index);
+    void onDecListItemClicked(QModelIndex index);
 private:
      QWebView *webView_;
 //     QWebView *webView1_;
@@ -42,6 +46,9 @@ private:
      QClipboard * clipboard;
      QNetworkAccessManager *manager;
      QTextEdit *ceTextEdit_;
+     Ui::MainWindow *ui_;
+     QStringListModel * adjModel_;
+     QStringListModel * decModel_;
 };
 
 #endif // INPUTFORM_H

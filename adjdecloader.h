@@ -15,7 +15,7 @@ class AdjDecLoader
 public:
     AdjDecLoader(const QString& fileName, QHash<QString,QString> charDef);
 
-    QString getText(const QString& hanzi, bool colorIfSubAdj = false);
+    QStringList getText(const QString& hanzi, bool colorIfSubAdj = false);
 
 private:
 
