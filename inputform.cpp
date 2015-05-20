@@ -48,8 +48,8 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
      QSettings().setValue("dictFile", dictFile);
      dictLoader = new DictLoaderSep(dictFile);
      dictLoaderEn = new DictLoaderEdict();
-     adjLoader = new AdjDecLoader(":AdjList.txt",dictLoader->getDict());
-     decLoader = new AdjDecLoader(":decomp.txt",dictLoader->getDict());
+     adjLoader = new AdjDecLoader(":AdjList.txt",dictLoaderEn->getDict());
+     decLoader = new AdjDecLoader(":decomp.txt",dictLoaderEn->getDict());
 
      adjModel_ = new QStringListModel(this);
      decModel_ = new QStringListModel(this);
