@@ -62,6 +62,7 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
      ui_->decListView->setItemDelegate(new HtmlDelegate(this));
 
 
+
     // info: /print would argument will hide the left border
    // ui->webView->load(QUrl("http://www.thai-language.com"));
 
@@ -81,6 +82,8 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
 
     connect(ui_->adjListView,SIGNAL(clicked(QModelIndex)),this,SLOT(onAdjListItemClicked(QModelIndex)));
     connect(ui_->decListView,SIGNAL(clicked(QModelIndex)),this,SLOT(onDecListItemClicked(QModelIndex)));
+    connect(ui_->stToggleButton,SIGNAL(clicked()),this,SLOT(stToggle()));
+
 }
 
 void InputForm::onLoadFinished(bool)
@@ -110,6 +113,11 @@ void InputForm::onDecListItemClicked(QModelIndex index)
     {
         updateModels(str.remove(QRegExp("<[^>]*>")).at(0));
     }
+}
+
+void InputForm::stToggle()
+{
+
 }
 
 

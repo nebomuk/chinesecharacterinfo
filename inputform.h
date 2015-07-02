@@ -30,6 +30,7 @@ private slots:
     void replyFinished(QNetworkReply *reply);
     void onAdjListItemClicked(QModelIndex index);
     void onDecListItemClicked(QModelIndex index);
+    void stToggle(); // toggle between simplified and traditional characters
 private:
      QWebView *webView_;
 //     QWebView *webView1_;
