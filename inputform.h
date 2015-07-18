@@ -20,7 +20,7 @@ class InputForm : public QObject
 public:
     explicit InputForm(Ui::MainWindow *ui, QObject *parent = 0);
     
-    void updateModels(QString text);
+    void updateModels();
     void loadSimplified();
     void loadTraditional();
 public slots:
@@ -47,6 +47,7 @@ private:
      DictLoaderSep * dictLoader;
      QSharedPointer<DictLoaderEdict> dictLoaderEn;
      QClipboard * clipboard;
+     QString currentCharacters; // the characters that are currently in the clipboard or that have ben clicked
      QNetworkAccessManager *manager;
      QTextEdit *ceTextEdit_;
      Ui::MainWindow *ui_;

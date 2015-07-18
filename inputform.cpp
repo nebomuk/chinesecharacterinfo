@@ -101,7 +101,8 @@ void InputForm::onAdjListItemClicked(QModelIndex index)
     QString str = adjModel_->stringList().at(rowIndex);
     if(str > 0)
     {
-        updateModels(str.remove(QRegExp("<[^>]*>")).at(0)); // remove html and take first char (chinese char)
+        currentCharacters = str.remove(QRegExp("<[^>]*>")).at(0);
+        updateModels(); // remove html and take first char (chinese char)
     }
 }
 
@@ -111,7 +112,8 @@ void InputForm::onDecListItemClicked(QModelIndex index)
     QString str = decModel_->stringList().at(rowIndex);
     if(str > 0)
     {
-        updateModels(str.remove(QRegExp("<[^>]*>")).at(0));
+        currentCharacters = str.remove(QRegExp("<[^>]*>"));
+        updateModels();
     }
 }
 
@@ -120,13 +122,15 @@ void InputForm::loadSimplified()
     dictLoaderEn = QSharedPointer<DictLoaderEdict>(new DictLoaderEdict(DictLoaderEdict::Simplified));
     adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":AdjList.txt",dictLoaderEn->getDict(),AdjDecLoader::Simplified));
     decLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decomp.txt",dictLoaderEn->getDict(), AdjDecLoader::Simplified));
+    this->updateModels();
 }
 
 void InputForm::loadTraditional()
 {
     dictLoaderEn = QSharedPointer<DictLoaderEdict>(new DictLoaderEdict(DictLoaderEdict::Traditional));
     adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":AdjListT.txt",dictLoader->getDict(),AdjDecLoader::Traditional));
-    adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decompT.txt",dictLoader->getDict(),AdjDecLoader::Traditional));
+    decLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decompT.txt",dictLoader->getDict(),AdjDecLoader::Traditional));
+    this->updateModels();
 }
 
 void InputForm::stToggle(bool pressed)
@@ -144,8 +148,13 @@ void InputForm::stToggle(bool pressed)
 }
 
 
-void InputForm::updateModels(QString text)
+void InputForm::updateModels()
 {
+
+    QString text = currentCharacters;
+    if(text.isEmpty())
+        return;
+
     QString translation = text.length() > 0 ? text.at(0) + " " + dictLoader->getDict().value(text.at(0)) : QString();
     QString translationEn = text.length() > 0 ? text.at(0) + " " + dictLoaderEn->getDict().value(text.at(0)) : QString();
     translationLineEdit_->setText(translation);
@@ -199,10 +208,12 @@ void InputForm::clipboardChanged(QClipboard::Mode mode)
     if(isHan.indexIn(text) == -1)
         return;
 
-    text = isHan.cap();
+    currentCharacters = isHan.cap();
 
-    updateModels(text);
+
+    updateModels();
 }
+
 
 void InputForm::replyFinished(QNetworkReply *reply)
 {
