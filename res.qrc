@@ -6,5 +6,7 @@
         <file alias="cedict_ts.u8">cedict_ts.u8</file>
         <file alias="CharFreq-Modern.csv">CharFreq-Modern.csv</file>
         <file alias="ic_launcher.png">ic_launcher.png</file>
+        <file>AdjListT.txt</file>
+        <file>decompT.txt</file>
     </qresource>
 </RCC>

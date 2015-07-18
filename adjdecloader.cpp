@@ -36,10 +36,11 @@ void AdjDecLoader::loadData()
             }
 }
 
-AdjDecLoader::AdjDecLoader(const QString& fileName, QHash<QString, QString> charDef)
+AdjDecLoader::AdjDecLoader(const QString& fileName, QHash<QString, QString> charDef, Characters characters)
 {
     this->fileName = fileName;
     this->charDef = charDef;
+    this->characters = characters;
     QtConcurrent::run(this, &AdjDecLoader::loadData);
 }
 
@@ -50,7 +51,16 @@ QStringList AdjDecLoader::getText(const QString &hanzi, bool colorIfSubAdj)
 
     QStringList texts;
     QStringList adjs = charAdj[hanzi.at(0)];
-    qSort(adjs.begin(),adjs.end(),CharFreq::moreFrequent);
+
+
+    if(characters == Simplified)
+    {
+        qSort(adjs.begin(),adjs.end(),CharFreq::moreFrequent);
+    }
+    else
+    {
+        qSort(adjs.begin(),adjs.end(),CharFreq::moreFrequentT);
+    }
 
     QStringListIterator it(adjs);
     while(it.hasNext())

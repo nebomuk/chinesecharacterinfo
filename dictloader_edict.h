@@ -8,9 +8,19 @@
 
 class DictLoaderEdict
 {
+
 public:
-    DictLoaderEdict();
-    QHash<QString,QString> getDict() const { return charDef;}
+
+    enum Characters
+    {
+        Traditional,
+        Simplified
+    };
+
+    // loads the dic from the resources, keys can be traditional or simplified
+    DictLoaderEdict(Characters characters = Simplified);
+
+    QHash<QString,QString> getDict() const { return charDef;} // hash map containining the char as a key, and the definition as value
 
 private:
     QHash<QString,QString> charDef;

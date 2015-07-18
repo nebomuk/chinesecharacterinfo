@@ -47,9 +47,9 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
      }
      QSettings().setValue("dictFile", dictFile);
      dictLoader = new DictLoaderSep(dictFile);
-     dictLoaderEn = new DictLoaderEdict();
-     adjLoader = new AdjDecLoader(":AdjList.txt",dictLoaderEn->getDict());
-     decLoader = new AdjDecLoader(":decomp.txt",dictLoaderEn->getDict());
+
+     // initializes ictLoaderEn   adjLoader    decLoader
+     loadSimplified();
 
      adjModel_ = new QStringListModel(this);
      decModel_ = new QStringListModel(this);
@@ -82,7 +82,7 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
 
     connect(ui_->adjListView,SIGNAL(clicked(QModelIndex)),this,SLOT(onAdjListItemClicked(QModelIndex)));
     connect(ui_->decListView,SIGNAL(clicked(QModelIndex)),this,SLOT(onDecListItemClicked(QModelIndex)));
-    connect(ui_->stToggleButton,SIGNAL(clicked()),this,SLOT(stToggle()));
+    connect(ui_->stToggleButton,SIGNAL(toggled(bool)),this,SLOT(stToggle(bool)));
 
 }
 
@@ -115,8 +115,31 @@ void InputForm::onDecListItemClicked(QModelIndex index)
     }
 }
 
-void InputForm::stToggle()
+void InputForm::loadSimplified()
 {
+    dictLoaderEn = QSharedPointer<DictLoaderEdict>(new DictLoaderEdict(DictLoaderEdict::Simplified));
+    adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":AdjList.txt",dictLoaderEn->getDict(),AdjDecLoader::Simplified));
+    decLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decomp.txt",dictLoaderEn->getDict(), AdjDecLoader::Simplified));
+}
+
+void InputForm::loadTraditional()
+{
+    dictLoaderEn = QSharedPointer<DictLoaderEdict>(new DictLoaderEdict(DictLoaderEdict::Traditional));
+    adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":AdjListT.txt",dictLoader->getDict(),AdjDecLoader::Traditional));
+    adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decompT.txt",dictLoader->getDict(),AdjDecLoader::Traditional));
+}
+
+void InputForm::stToggle(bool pressed)
+{
+
+    if(pressed)
+    {
+        loadTraditional();
+    }
+    else
+    {
+        loadSimplified();
+    }
 
 }
 

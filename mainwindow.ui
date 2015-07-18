@@ -56,6 +56,16 @@
        </widget>
       </item>
       <item>
+       <widget class="STToggleButton" name="stToggleButton">
+        <property name="text">
+         <string>简</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="pushButton">
         <property name="text">
          <string>msg</string>
@@ -105,7 +115,12 @@
   <customwidget>
    <class>QWebView</class>
    <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
+   <header>QtWebKitWidgets/QWebView</header>
+  </customwidget>
+  <customwidget>
+   <class>STToggleButton</class>
+   <extends>QToolButton</extends>
+   <header>sttogglebutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

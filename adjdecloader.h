@@ -12,8 +12,15 @@
 
 class AdjDecLoader
 {
+
 public:
-    AdjDecLoader(const QString& fileName, QHash<QString,QString> charDef);
+    enum Characters
+    {
+        Traditional,
+        Simplified
+    };
+
+    AdjDecLoader(const QString& fileName, QHash<QString,QString> charDef, Characters characters = Simplified);
 
     QStringList getText(const QString& hanzi, bool colorIfSubAdj = false);
 
@@ -24,6 +31,7 @@ private:
     QHash<QString,QString> charDef; // characters -defnition
     QHash<QString,QStringList> charAdj; // characters -adjacent characters
     QString fileName;
+    Characters characters; // mode, simplified or traditional sorting
 };
 
 #endif // ADJACENTCHARACTERS_H

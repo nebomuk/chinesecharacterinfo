@@ -21,6 +21,8 @@ public:
     explicit InputForm(Ui::MainWindow *ui, QObject *parent = 0);
     
     void updateModels(QString text);
+    void loadSimplified();
+    void loadTraditional();
 public slots:
     
 private slots:
@@ -30,7 +32,7 @@ private slots:
     void replyFinished(QNetworkReply *reply);
     void onAdjListItemClicked(QModelIndex index);
     void onDecListItemClicked(QModelIndex index);
-    void stToggle(); // toggle between simplified and traditional characters
+    void stToggle(bool pressed); // toggle between simplified and traditional characters
 private:
      QWebView *webView_;
 //     QWebView *webView1_;
@@ -40,10 +42,10 @@ private:
      QTextEdit * decTextEdit_;
      QTextEdit *adjTextEdit_;
      HanziSearch * hanziSearch;
-     AdjDecLoader *adjLoader;
-     AdjDecLoader *decLoader;
+     QSharedPointer<AdjDecLoader> adjLoader;
+     QSharedPointer<AdjDecLoader> decLoader;
      DictLoaderSep * dictLoader;
-     DictLoaderEdict *dictLoaderEn;
+     QSharedPointer<DictLoaderEdict> dictLoaderEn;
      QClipboard * clipboard;
      QNetworkAccessManager *manager;
      QTextEdit *ceTextEdit_;

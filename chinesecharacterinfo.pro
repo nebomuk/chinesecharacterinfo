@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     dictloader_edict.cpp \
     dictloadersep.cpp \
     convertpinyin.cpp \
-    htmldelegate.cpp
+    htmldelegate.cpp \
+    sttogglebutton.cpp
 
 HEADERS  += mainwindow.h \
     inputform.h \
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h \
     charfreq.h \
     color.h \
     convertpinyin.h \
-    htmldelegate.h
+    htmldelegate.h \
+    sttogglebutton.h
 
 FORMS    += mainwindow.ui \
     mainwindow_small.ui
