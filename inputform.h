@@ -47,7 +47,7 @@ private:
      DictLoaderSep * dictLoader;
      QSharedPointer<DictLoaderEdict> dictLoaderEn;
      QClipboard * clipboard;
-     QString currentCharacters; // the characters that are currently in the clipboard or that have ben clicked
+     QChar currentChar; // the characters that are currently in the clipboard or that have ben clicked
      QNetworkAccessManager *manager;
      QTextEdit *ceTextEdit_;
      Ui::MainWindow *ui_;

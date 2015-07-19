@@ -47,6 +47,7 @@ InputForm::InputForm(Ui::MainWindow * ui, QObject *parent) :
      }
      QSettings().setValue("dictFile", dictFile);
      dictLoader = new DictLoaderSep(dictFile);
+     dictLoaderEn = QSharedPointer<DictLoaderEdict>(new DictLoaderEdict());
 
      // initializes ictLoaderEn   adjLoader    decLoader
      loadSimplified();
@@ -101,7 +102,7 @@ void InputForm::onAdjListItemClicked(QModelIndex index)
     QString str = adjModel_->stringList().at(rowIndex);
     if(str > 0)
     {
-        currentCharacters = str.remove(QRegExp("<[^>]*>")).at(0);
+        currentChar = str.remove(QRegExp("<[^>]*>")).at(0);
         updateModels(); // remove html and take first char (chinese char)
     }
 }
@@ -112,14 +113,13 @@ void InputForm::onDecListItemClicked(QModelIndex index)
     QString str = decModel_->stringList().at(rowIndex);
     if(str > 0)
     {
-        currentCharacters = str.remove(QRegExp("<[^>]*>"));
+        currentChar = str.remove(QRegExp("<[^>]*>")).at(0);
         updateModels();
     }
 }
 
 void InputForm::loadSimplified()
-{
-    dictLoaderEn = QSharedPointer<DictLoaderEdict>(new DictLoaderEdict(DictLoaderEdict::Simplified));
+ {
     adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":AdjList.txt",dictLoaderEn->getDict(),AdjDecLoader::Simplified));
     decLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decomp.txt",dictLoaderEn->getDict(), AdjDecLoader::Simplified));
     this->updateModels();
@@ -127,9 +127,8 @@ void InputForm::loadSimplified()
 
 void InputForm::loadTraditional()
 {
-    dictLoaderEn = QSharedPointer<DictLoaderEdict>(new DictLoaderEdict(DictLoaderEdict::Traditional));
-    adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":AdjListT.txt",dictLoader->getDict(),AdjDecLoader::Traditional));
-    decLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decompT.txt",dictLoader->getDict(),AdjDecLoader::Traditional));
+    adjLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":AdjListT.txt",dictLoaderEn->getDictT(),AdjDecLoader::Traditional));
+    decLoader = QSharedPointer<AdjDecLoader>(new AdjDecLoader(":decompT.txt",dictLoaderEn->getDictT(),AdjDecLoader::Traditional));
     this->updateModels();
 }
 
@@ -138,10 +137,12 @@ void InputForm::stToggle(bool pressed)
 
     if(pressed)
     {
+        currentChar = dictLoaderEn->s2T(currentChar);
         loadTraditional();
     }
     else
     {
+        currentChar = dictLoaderEn->t2S(currentChar);
         loadSimplified();
     }
 
@@ -150,25 +151,28 @@ void InputForm::stToggle(bool pressed)
 
 void InputForm::updateModels()
 {
-
-    QString text = currentCharacters;
-    if(text.isEmpty())
+    if(currentChar.isNull())
         return;
 
-    QString translation = text.length() > 0 ? text.at(0) + " " + dictLoader->getDict().value(text.at(0)) : QString();
-    QString translationEn = text.length() > 0 ? text.at(0) + " " + dictLoaderEn->getDict().value(text.at(0)) : QString();
+    QString translation =  currentChar + " " + dictLoader->getDict().value(currentChar);
+
+    QString def = dictLoaderEn->getDict().value(currentChar); // simp def
+    if(def.isEmpty())
+        def = dictLoaderEn->getDictT().value(currentChar); // trad def
+
+    QString translationEn = currentChar + " " + def;
     translationLineEdit_->setText(translation);
     translationLineEdit_->home(false);
     translationEnLineEdit_->setText(translationEn);
     translationEnLineEdit_->home(false);
-    RTHLineEdit_->setText(hanziSearch->getText(text));
+    RTHLineEdit_->setText(hanziSearch->getText(currentChar));
     RTHLineEdit_->home(false);
 
-    decModel_->setStringList(decLoader->getText(text));
-    adjModel_->setStringList(adjLoader->getText(text,true));
+    decModel_->setStringList(decLoader->getText(currentChar));
+    adjModel_->setStringList(adjLoader->getText(currentChar,true));
 
 
-//    webView1_->load(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + text.at(0) +"&submitButton1=Etymology"));
+//    webView1_->load(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + currentChar +"&submitButton1=Etymology"));
 
 
 
@@ -177,12 +181,12 @@ void InputForm::updateModels()
         //QWebElement searchElement = frame->findFirstElement("#search");
         QWebElement searchElement = frame->findFirstElement("[name=c]");
 
-        searchElement.setAttribute("value",text.at(0));
+        searchElement.setAttribute("value",currentChar);
         searchElement.setFocus();
         QKeyEvent keyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
         webView_->event(&keyEvent);
 
-        manager->get(QNetworkRequest(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + text.at(0) +"&submitButton1=Etymology")));
+        manager->get(QNetworkRequest(QUrl("http://www.chineseetymology.org/CharacterEtymology.aspx?characterInput=" + currentChar +"&submitButton1=Etymology")));
 }
 
 void InputForm::clipboardChanged(QClipboard::Mode mode)
@@ -208,7 +212,15 @@ void InputForm::clipboardChanged(QClipboard::Mode mode)
     if(isHan.indexIn(text) == -1)
         return;
 
-    currentCharacters = isHan.cap();
+    QChar firstChar = isHan.cap().at(0); // captured regex
+    if(ui_->stToggleButton->state() == STToggleButton::Simplified)
+    {
+        currentChar = dictLoaderEn->t2S(firstChar);
+    }
+    else // state == Traditional
+    {
+        currentChar = dictLoaderEn->s2T(firstChar);
+    }
 
 
     updateModels();

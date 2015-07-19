@@ -12,14 +12,26 @@ class STToggleButton : public QToolButton
 {
     Q_OBJECT
 public:
+
+    enum State
+    {
+        Simplified,
+        Traditional
+    };
+
     explicit STToggleButton(QWidget *parent = 0);
     ~STToggleButton();
+
+    State state() const; // the toggle state
 
 signals:
 
 private slots:
     // toggle between simplified and traditional characters
     void onToggled(bool b);
+
+   private:
+    State state_; // the selected chars
 };
 
 #endif // STTOGGLEBUTTON_H
