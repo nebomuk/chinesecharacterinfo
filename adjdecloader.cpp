@@ -66,8 +66,13 @@ QStringList AdjDecLoader::getText(const QString &hanzi, bool colorIfSubAdj)
     while(it.hasNext())
     {
         QString adj = it.next();
-        if(!charDef.contains(adj))
+
+        if(!charDef.contains(adj)) // no definition
+        {
+            texts += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  \">"
+                     "<span style=\" background-color:#f0f0f0;\"><span style=\" font-size:16pt;\">" + adj + "</span></span></p>";
             continue;
+        }
 
         bool hasAdj = charAdj.contains(adj); // check if this adjacent char has any chars that are adjacent to it
 
